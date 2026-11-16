@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebScraper Pro | Developed by Ojas Mishra</title>
+    <!-- Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            --accent-color: #0d6efd;
+            --bg-color: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #334155;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .navbar-custom {
+            background: var(--primary-gradient);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .main-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e2e8f0;
+            padding: 30px;
+        }
+
+        .stat-card {
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            background: #ffffff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            opacity: 0.85;
+        }
+
+        .image-card {
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            transition: all 0.25s ease;
+            background: #f1f5f9;
+            height: 180px;
+            position: relative;
+        }
+
+        .image-card:hover {
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #ffffff;
+        }
+
+        .link-row {
+            padding: 10px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .link-row:hover {
+            background-color: #f8fafc;
+        }
+
+        .link-text {
+            word-break: break-all;
+            text-decoration: none;
+            color: #0284c7;
+            font-size: 0.95rem;
+        }
+
+        .link-text:hover {
+            text-decoration: underline;
+        }
+
+        .nav-pills .nav-link.active {
+            background-color: #2563eb;
+        }
+
+        footer {
+            margin-top: auto;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            padding: 20px 0;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .badge-pill {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .badge-pill:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#">
+                <span class="fs-4">🕸️</span>
+                <span class="fs-4 tracking-wide">WebScraper Pro</span>
+            </a>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-light text-dark px-3 py-2 rounded-pill fw-semibold shadow-sm">
+                    <i class="bi bi-person-fill text-primary me-1"></i> Developed by Ojas Mishra
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTAINER -->
+    <div class="container my-5">
+        <div class="main-card">
+            <div class="text-center mb-4">
+                <h1 class="fw-bold text-dark mb-2">Automated Web Content Extractor</h1>
+                <p class="text-muted">Enter any website URL to extract all images, hyperlink sources, videos, and page metadata.</p>
+            </div>
+
+            <!-- SEARCH INPUT -->
+            <div class="row justify-content-center mb-3">
+                <div class="col-lg-10">
+                    <div class="input-group input-group-lg shadow-sm">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-globe2 text-primary"></i>
+                        </span>
+                        <input type="text" id="urlInput" class="form-control border-start-0 ps-0"
+                               placeholder="e.g. https://news.ycombinator.com or wikipedia.org"
+                               onkeydown="if(event.key === 'Enter') scrape();">
+                        <button class="btn btn-outline-secondary" type="button" onclick="clearInput()" title="Clear">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                        <button class="btn btn-primary px-4 fw-semibold" id="scrapeBtn" onclick="scrape()">
+                            <i class="bi bi-search me-1"></i> Scrape
+                        </button>
+                    </div>
+
+                    <!-- QUICK SAMPLE URL PILLS -->
+                    <div class="d-flex align-items-center gap-2 mt-3 flex-wrap">
+                        <small class="text-muted fw-semibold">Quick Try:</small>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis badge-pill border py-2 px-3"
+                              onclick="setQuickUrl('https://news.ycombinator.com')">
+                            <i class="bi bi-link-45deg"></i> Hacker News
+                        </span>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis badge-pill border py-2 px-3"
+                              onclick="setQuickUrl('https://en.wikipedia.org/wiki/Web_scraping')">
+                            <i class="bi bi-link-45deg"></i> Wikipedia: Web Scraping
+                        </span>
+                        <span class="badge bg-secondary-subtle text-secondary-emphasis badge-pill border py-2 px-3"
+                              onclick="setQuickUrl('https://github.com')">
+                            <i class="bi bi-link-45deg"></i> GitHub
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ERROR ALERT -->
+            <div id="errorAlert" class="alert alert-danger alert-dismissible fade show d-none mt-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span id="errorMessage"></span>
+                <button type="button" class="btn-close" onclick="hideError()"></button>
+            </div>
+
+            <!-- LOADING SPINNER -->
+            <div id="loadingIndicator" class="text-center py-5 d-none">
+                <div class="spinner-border text-primary" style="width: 3.5rem; height: 3.5rem;" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <h5 class="mt-3 text-secondary fw-semibold">Connecting and parsing document tree...</h5>
+                <p class="text-muted small">Extracting DOM elements using Jsoup</p>
+            </div>
+
+            <!-- RESULTS SECTION -->
+            <div id="resultsSection" class="d-none mt-4">
+                <hr class="my-4">
+
+                <!-- SITE METADATA HEADER -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 p-3 bg-light rounded-3 border">
+                    <div>
+                        <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle me-2">
+                            <i class="bi bi-check-circle-fill me-1"></i> Success
+                        </span>
+                        <h4 class="d-inline-block fw-bold mb-1" id="pageTitle">Page Title</h4>
+                        <div class="text-muted small" id="scrapedUrlDisplay"></div>
+                    </div>
+                    <div class="mt-2 mt-md-0">
+                        <button class="btn btn-sm btn-outline-primary" onclick="exportJson()">
+                            <i class="bi bi-download me-1"></i> Download JSON
+                        </button>
+                    </div>
+                </div>
+
+                <!-- STAT COUNTER CARDS -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="stat-card d-flex align-items-center gap-3">
+                            <div class="text-primary stat-icon">
+                                <i class="bi bi-images"></i>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-0" id="totalImages">0</h3>
+                                <span class="text-muted">Extracted Images</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card d-flex align-items-center gap-3">
+                            <div class="text-success stat-icon">
+                                <i class="bi bi-link-45deg"></i>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-0" id="totalLinks">0</h3>
+                                <span class="text-muted">Extracted Links</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card d-flex align-items-center gap-3">
+                            <div class="text-danger stat-icon">
+                                <i class="bi bi-camera-video"></i>
+                            </div>
+                            <div>
+                                <h3 class="fw-bold mb-0" id="totalVideos">0</h3>
+                                <span class="text-muted">Extracted Videos</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTENT TABS -->
+                <ul class="nav nav-pills mb-4 gap-2" id="resultsTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-semibold" id="images-tab" data-bs-toggle="pill"
+                                data-bs-target="#images-tab-pane" type="button" role="tab">
+                            <i class="bi bi-images me-1"></i> Images (<span id="imgTabCount">0</span>)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-semibold" id="links-tab" data-bs-toggle="pill"
+                                data-bs-target="#links-tab-pane" type="button" role="tab">
+                            <i class="bi bi-link-45deg me-1"></i> Links (<span id="linkTabCount">0</span>)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-semibold" id="videos-tab" data-bs-toggle="pill"
+                                data-bs-target="#videos-tab-pane" type="button" role="tab">
+                            <i class="bi bi-camera-video me-1"></i> Videos (<span id="videoTabCount">0</span>)
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-semibold" id="json-tab" data-bs-toggle="pill"
+                                data-bs-target="#json-tab-pane" type="button" role="tab">
+                            <i class="bi bi-code-slash me-1"></i> Raw JSON
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="resultsTabContent">
+                    <!-- IMAGES TAB -->
+                    <div class="tab-pane fade show active" id="images-tab-pane" role="tabpanel">
+                        <div id="imagesGrid" class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3"></div>
+                        <div id="noImages" class="text-center py-4 text-muted d-none">No images found on this page.</div>
+                    </div>
+
+                    <!-- LINKS TAB -->
+                    <div class="tab-pane fade" id="links-tab-pane" role="tabpanel">
+                        <div class="mb-3">
+                            <input type="text" id="linkFilter" class="form-control"
+                                   placeholder="Filter links..." oninput="filterLinks()">
+                        </div>
+                        <div id="linksContainer" class="border rounded bg-white"></div>
+                        <div id="noLinks" class="text-center py-4 text-muted d-none">No links found on this page.</div>
+                    </div>
+
+                    <!-- VIDEOS TAB -->
+                    <div class="tab-pane fade" id="videos-tab-pane" role="tabpanel">
+                        <div id="videosGrid" class="row row-cols-1 row-cols-md-2 g-4"></div>
+                        <div id="noVideos" class="text-center py-4 text-muted d-none">No video tags or embeds found on this page.</div>
+                    </div>
+
+                    <!-- RAW JSON TAB -->
+                    <div class="tab-pane fade" id="json-tab-pane" role="tabpanel">
+                        <pre class="bg-dark text-light p-3 rounded" style="max-height: 450px; overflow-y: auto;"><code id="jsonDisplay"></code></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container">
+            <p class="mb-1 fw-semibold text-dark">WebScraper Pro &copy; 2026</p>
+            <p class="mb-0 small">
+                Architected &amp; Built with Spring Boot, Jsoup &amp; Bootstrap 5 by
+                <strong class="text-primary">Ojas Mishra</strong>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let currentData = null;
+
+        function setQuickUrl(url) {
+            document.getElementById("urlInput").value = url;
+            scrape();
+        }
+
+        function clearInput() {
+            document.getElementById("urlInput").value = "";
+            document.getElementById("urlInput").focus();
+        }
+
+        function showError(msg) {
+            const errorAlert = document.getElementById("errorAlert");
+            document.getElementById("errorMessage").textContent = msg;
+            errorAlert.classList.remove("d-none");
+        }
+
+        function hideError() {
+            document.getElementById("errorAlert").classList.add("d-none");
+        }
+
+        function scrape() {
+            hideError();
+            const rawUrl = document.getElementById("urlInput").value.trim();
+            if (!rawUrl) {
+                showError("Please enter a valid website URL before scraping.");
+                return;
+            }
+
+            const loading = document.getElementById("loadingIndicator");
+            const results = document.getElementById("resultsSection");
+            const btn = document.getElementById("scrapeBtn");
+
+            loading.classList.remove("d-none");
+            results.classList.add("d-none");
+            btn.disabled = true;
+
+            fetch(`/api/scrape?url=${encodeURIComponent(rawUrl)}`)
+                .then(res => res.json())
+                .then(data => {
+                    loading.classList.add("d-none");
+                    btn.disabled = false;
+
+                    if (data.status === "error") {
+                        showError(data.message || "An error occurred while scraping the website.");
+                        return;
+                    }
+
+                    currentData = data;
+                    renderResults(data);
+                })
+                .catch(err => {
+                    loading.classList.add("d-none");
+                    btn.disabled = false;
+                    showError("Failed to reach server: " + err.message);
+                });
+        }
+
+        function renderResults(data) {
+            document.getElementById("pageTitle").textContent = data.title || "No Title";
+            document.getElementById("scrapedUrlDisplay").textContent = data.url;
+
+            document.getElementById("totalImages").textContent = data.totalImages || 0;
+            document.getElementById("totalLinks").textContent = data.totalLinks || 0;
+            document.getElementById("totalVideos").textContent = data.totalVideos || 0;
+
+            document.getElementById("imgTabCount").textContent = data.totalImages || 0;
+            document.getElementById("linkTabCount").textContent = data.totalLinks || 0;
+            document.getElementById("videoTabCount").textContent = data.totalVideos || 0;
+
+            // Render Images
+            const imagesGrid = document.getElementById("imagesGrid");
+            const noImages = document.getElementById("noImages");
+            imagesGrid.innerHTML = "";
+            if (data.images && data.images.length > 0) {
+                noImages.classList.add("d-none");
+                data.images.forEach(src => {
+                    const col = document.createElement("div");
+                    col.className = "col";
+                    col.innerHTML = `
+                        <div class="image-card">
+                            <a href="${src}" target="_blank" rel="noopener noreferrer">
+                                <img src="${src}" loading="lazy" alt="Scraped Image" onerror="this.src='https://via.placeholder.com/150?text=Load+Error'">
+                            </a>
+                        </div>
+                    `;
+                    imagesGrid.appendChild(col);
+                });
+            } else {
+                noImages.classList.remove("d-none");
+            }
+
+            // Render Links
+            renderLinksList(data.links || []);
+
+            // Render Videos
+            const videosGrid = document.getElementById("videosGrid");
+            const noVideos = document.getElementById("noVideos");
+            videosGrid.innerHTML = "";
+            if (data.videos && data.videos.length > 0) {
+                noVideos.classList.add("d-none");
+                data.videos.forEach(src => {
+                    const col = document.createElement("div");
+                    col.className = "col";
+                    if (src.includes("youtube") || src.includes("vimeo")) {
+                        col.innerHTML = `
+                            <div class="card p-2 shadow-sm">
+                                <iframe src="${src}" class="w-100 rounded" height="240" allowfullscreen></iframe>
+                                <div class="mt-2"><small class="text-truncate d-block">${src}</small></div>
+                            </div>
+                        `;
+                    } else {
+                        col.innerHTML = `
+                            <div class="card p-2 shadow-sm">
+                                <video src="${src}" controls class="w-100 rounded" height="240"></video>
+                                <div class="mt-2"><small class="text-truncate d-block">${src}</small></div>
+                            </div>
+                        `;
+                    }
+                    videosGrid.appendChild(col);
+                });
+            } else {
+                noVideos.classList.remove("d-none");
+            }
+
+            // Render JSON
+            document.getElementById("jsonDisplay").textContent = JSON.stringify(data, null, 2);
+
+            document.getElementById("resultsSection").classList.remove("d-none");
+        }
+
+        function renderLinksList(links) {
+            const container = document.getElementById("linksContainer");
+            const noLinks = document.getElementById("noLinks");
+            container.innerHTML = "";
+
+            if (!links || links.length === 0) {
+                noLinks.classList.remove("d-none");
+                return;
+            }
+            noLinks.classList.add("d-none");
+
+            links.forEach(link => {
+                const row = document.createElement("div");
+                row.className = "link-row";
+                row.innerHTML = `
+                    <div class="d-flex align-items-center gap-2 text-truncate">
+                        <i class="bi bi-link text-muted"></i>
+                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="link-text text-truncate">${link}</a>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-secondary" onclick="navigator.clipboard.writeText('${link}')" title="Copy URL">
+                            <i class="bi bi-clipboard"></i>
+                        </button>
+                        <a href="${link}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary" title="Open Link">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        function filterLinks() {
+            if (!currentData || !currentData.links) return;
+            const query = document.getElementById("linkFilter").value.toLowerCase();
+            const filtered = currentData.links.filter(l => l.toLowerCase().includes(query));
+            renderLinksList(filtered);
+        }
+
+        function exportJson() {
+            if (!currentData) return;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentData, null, 2));
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `scrape-results-${Date.now()}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>
